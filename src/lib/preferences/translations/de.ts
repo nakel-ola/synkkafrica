@@ -2092,6 +2092,8 @@ export const de = {
   "vendor.addListing.saveDraft": "Als Entwurf speichern",
   "vendor.addListing.draftSaved": "Entwurf gespeichert",
   "vendor.addListing.draftSaveFailed": "Entwurf konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "vendor.addListing.sessionExpired":
+    "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an — Ihr Entwurf ist auf diesem Gerät gespeichert und wird wiederhergestellt.",
   "vendor.addListing.saveContinue": "Speichern & weiter",
   "vendor.addListing.completeRequiredFields": "Pflichtfelder ausfüllen: {fields}",
   "vendor.addListing.publish": "Angebot veröffentlichen",

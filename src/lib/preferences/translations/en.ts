@@ -2084,6 +2084,8 @@ export const en = {
   "vendor.addListing.saveDraft": "Save as draft",
   "vendor.addListing.draftSaved": "Draft saved",
   "vendor.addListing.draftSaveFailed": "Couldn't save your draft. Please try again.",
+  "vendor.addListing.sessionExpired":
+    "Your session has expired. Please sign in again — your draft is saved on this device and will be restored.",
   "vendor.addListing.saveContinue": "Save & Continue",
   "vendor.addListing.completeRequiredFields": "Complete required fields: {fields}",
   "vendor.addListing.publish": "Publish listing",

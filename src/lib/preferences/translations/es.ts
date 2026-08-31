@@ -2092,6 +2092,8 @@ export const es = {
   "vendor.addListing.saveDraft": "Guardar borrador",
   "vendor.addListing.draftSaved": "Borrador guardado",
   "vendor.addListing.draftSaveFailed": "No se pudo guardar tu borrador. Inténtalo de nuevo.",
+  "vendor.addListing.sessionExpired":
+    "Tu sesión ha expirado. Inicia sesión de nuevo — tu borrador está guardado en este dispositivo y se restaurará.",
   "vendor.addListing.saveContinue": "Guardar y continuar",
   "vendor.addListing.completeRequiredFields": "Completa los campos obligatorios: {fields}",
   "vendor.addListing.publish": "Publicar anuncio",
