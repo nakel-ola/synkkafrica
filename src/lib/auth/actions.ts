@@ -1,22 +1,37 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import { signIn, signOut } from "@/auth";
 import { requestOtp } from "@/lib/api/backend";
 
+// Sign-out helper. We deliberately do NOT use next-auth's `redirectTo`: that
+// makes Auth.js build an *absolute* Location from AUTH_URL, or from the request
+// origin when AUTH_URL is unset — and behind a proxy that origin resolves to
+// http://localhost:3000, which is how a signed-out user ends up staring at
+// "localhost refused to connect". Clearing the session and issuing our own
+// relative redirect lets the browser resolve it against whatever origin the
+// user is actually on, so this works in dev, previews and production without
+// any per-environment configuration.
+async function endSession() {
+  await signOut({ redirect: false });
+}
+
 export async function signOutAction() {
-  await signOut({ redirectTo: "/" });
+  await endSession();
+  redirect("/");
 }
 
 // Module-specific sign-out: return the vendor/admin to their own login screen
-// rather than the customer home. (next-auth v5 resolves redirectTo against
-// AUTH_URL — ensure AUTH_URL is set in deployed environments, otherwise the
-// post-logout redirect falls back to localhost.)
+// rather than the customer home.
 export async function signOutVendorAction() {
-  await signOut({ redirectTo: "/vendor/login" });
+  await endSession();
+  redirect("/vendor/login");
 }
 
 export async function signOutAdminAction() {
-  await signOut({ redirectTo: "/admin/login" });
+  await endSession();
+  redirect("/admin/login");
 }
 
 export async function signInWithGoogleAction() {

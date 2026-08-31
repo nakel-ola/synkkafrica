@@ -18,14 +18,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  env: {
-    AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_URL: process.env.AUTH_URL,
-    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
-    AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
-    AUTH_EMAIL_FROM: process.env.AUTH_EMAIL_FROM,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
+  // NOTE: do not add an `env: {...}` block for the AUTH_* variables. Next.js
+  // inlines everything listed there into the *client* bundle (see
+  // next/docs "next.config.js: env"), which would ship AUTH_SECRET and
+  // AUTH_GOOGLE_SECRET to the browser. Every consumer of those is server-only
+  // and reads process.env at runtime; NEXT_PUBLIC_API_URL is exposed to the
+  // client automatically by its NEXT_PUBLIC_ prefix.
 };
 
 export default nextConfig;

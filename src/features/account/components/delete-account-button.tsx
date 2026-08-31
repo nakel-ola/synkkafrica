@@ -19,8 +19,11 @@ export function DeleteAccountButton({ token }: { token: string | null }) {
     setError(null);
     try {
       await requestErasure(token);
-      // Account PII is gone — end the session and return home.
-      await signOut({ redirectTo: "/" });
+      // Account PII is gone — end the session and return home. `redirect: false`
+      // keeps next-auth from handing back an absolute URL built from the server's
+      // own origin (localhost behind a proxy); we navigate relatively instead.
+      await signOut({ redirect: false });
+      window.location.href = "/";
     } catch (err) {
       setDeleting(false);
       setError(
