@@ -2092,6 +2092,8 @@ export const fr = {
   "vendor.addListing.saveDraft": "Enregistrer comme brouillon",
   "vendor.addListing.draftSaved": "Brouillon enregistré",
   "vendor.addListing.draftSaveFailed": "Impossible d'enregistrer votre brouillon. Veuillez réessayer.",
+  "vendor.addListing.sessionExpired":
+    "Votre session a expiré. Veuillez vous reconnecter — votre brouillon est enregistré sur cet appareil et sera restauré.",
   "vendor.addListing.saveContinue": "Enregistrer & continuer",
   "vendor.addListing.completeRequiredFields": "Complétez les champs obligatoires : {fields}",
   "vendor.addListing.publish": "Publier l'annonce",

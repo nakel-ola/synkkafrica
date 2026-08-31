@@ -478,18 +478,25 @@ export function VendorAddListingContent({
     if (savingDraft) {
       return;
     }
-    if (!token) {
-      // The form is still safe locally (autosave), but the backend draft needs a
-      // session — tell the vendor instead of failing silently.
-      window.alert(t("vendor.addListing.draftSaveFailed"));
-      return;
-    }
     setSavingDraft(true);
     try {
+      // Re-fetch the token if the cached session lagged (same as the upload
+      // paths). This is what makes "Save as draft" work right after login: the
+      // useSession() context can still read "unauthenticated" until a reload,
+      // while getSession() returns the real token from the auth cookie.
+      const activeToken = await resolveAccessToken(token);
+      if (!activeToken) {
+        // Still no token after a live re-fetch → genuinely signed out. A retry
+        // can't help; the draft is safe locally (autosave), so send the vendor
+        // to re-login rather than showing a misleading "try again".
+        window.alert(t("vendor.addListing.sessionExpired"));
+        window.location.assign("/vendor/login");
+        return;
+      }
       if (draftId) {
-        await updateVendorListing(token, draftId, toUpdateInput(form));
+        await updateVendorListing(activeToken, draftId, toUpdateInput(form));
       } else {
-        const created = await createVendorListing(token, {
+        const created = await createVendorListing(activeToken, {
           ...toCreateInput(form),
           saveAsDraft: true,
         });
@@ -521,8 +528,10 @@ export function VendorAddListingContent({
   // Attach the wizard documents to the listing. The files were already
   // uploaded to storage on select, so this only records metadata — fast.
   // Best-effort per doc; a failed attach doesn't block publishing.
-  const attachWizardDocuments = async (listingId: string) => {
-    if (!token) return;
+  const attachWizardDocuments = async (
+    listingId: string,
+    activeToken: string,
+  ) => {
     const entries = Object.entries(form.uploadedDocuments) as [
       ListingDocumentId,
       AddListingFormState['uploadedDocuments'][ListingDocumentId],
@@ -532,7 +541,7 @@ export function VendorAddListingContent({
         if (!upload?.objectPath) return; // not uploaded (still uploading/failed)
         try {
           await uploadListingDocument(
-            token,
+            activeToken,
             listingId,
             WIZARD_DOC_TYPE[docId] ?? docId,
             upload.name,
@@ -546,19 +555,31 @@ export function VendorAddListingContent({
   };
 
   const handlePublish = async () => {
-    if (!token || publishing) return;
+    if (publishing) return;
     setPublishing(true);
     setPublishError(null);
     try {
+      // Re-fetch the token if the cached session lagged (same as save-draft and
+      // the upload paths), so publishing works right after login instead of
+      // silently no-op'ing on a stale useSession().
+      const activeToken = await resolveAccessToken(token);
+      if (!activeToken) {
+        setPublishing(false);
+        setPublishError(t("vendor.addListing.sessionExpired"));
+        return;
+      }
       if (draftId) {
         // A saved draft — update it, attach docs, then submit (draft → pending).
-        await updateVendorListing(token, draftId, toUpdateInput(form));
-        await attachWizardDocuments(draftId);
-        await submitVendorListing(token, draftId);
+        await updateVendorListing(activeToken, draftId, toUpdateInput(form));
+        await attachWizardDocuments(draftId, activeToken);
+        await submitVendorListing(activeToken, draftId);
       } else {
         // A fresh listing is created directly as `pending` — just attach docs.
-        const created = await createVendorListing(token, toCreateInput(form));
-        await attachWizardDocuments(created.id);
+        const created = await createVendorListing(
+          activeToken,
+          toCreateInput(form),
+        );
+        await attachWizardDocuments(created.id, activeToken);
       }
       // Published — the local autosave copy is no longer needed.
       clearAutosavedForm(editListingId);
